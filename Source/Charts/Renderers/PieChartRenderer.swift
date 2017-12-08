@@ -19,9 +19,9 @@ import CoreGraphics
 
 open class PieChartRenderer: DataRenderer
 {
-    @objc open weak var chart: PieChartView?
+    open weak var chart: PieChartView?
     
-    @objc public init(chart: PieChartView, animator: Animator, viewPortHandler: ViewPortHandler)
+    public init(chart: PieChartView?, animator: Animator?, viewPortHandler: ViewPortHandler?)
     {
         super.init(animator: animator, viewPortHandler: viewPortHandler)
         
@@ -46,7 +46,7 @@ open class PieChartRenderer: DataRenderer
         }
     }
     
-    @objc open func calculateMinimumRadiusForSpacedSlice(
+    open func calculateMinimumRadiusForSpacedSlice(
         center: CGPoint,
         radius: CGFloat,
         angle: CGFloat,
@@ -88,10 +88,11 @@ open class PieChartRenderer: DataRenderer
     }
     
     /// Calculates the sliceSpace to use based on visible values and their size compared to the set sliceSpace.
-    @objc open func getSliceSpace(dataSet: IPieChartDataSet) -> CGFloat
+    open func getSliceSpace(dataSet: IPieChartDataSet) -> CGFloat
     {
         guard
             dataSet.automaticallyDisableSliceSpacing,
+            let viewPortHandler = self.viewPortHandler,
             let data = chart?.data as? PieChartData
             else { return dataSet.sliceSpace }
         
@@ -105,9 +106,12 @@ open class PieChartRenderer: DataRenderer
         return sliceSpace
     }
 
-    @objc open func drawDataSet(context: CGContext, dataSet: IPieChartDataSet)
+    open func drawDataSet(context: CGContext, dataSet: IPieChartDataSet)
     {
-        guard let chart = chart else {return }
+        guard
+            let chart = chart,
+            let animator = animator
+            else {return }
         
         var angle: CGFloat = 0.0
         let rotationAngle = chart.rotationAngle
@@ -258,7 +262,8 @@ open class PieChartRenderer: DataRenderer
     {
         guard
             let chart = chart,
-            let data = chart.data
+            let data = chart.data,
+            let animator = animator
             else { return }
         
         let center = chart.centerCircleBox
@@ -426,7 +431,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: labelPoint,
                             align: align,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                            attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: valueTextColor]
                         )
                         
                         if j < data.entryCount && pe?.label != nil
@@ -437,8 +442,8 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight),
                                 align: align,
                                 attributes: [
-                                    NSAttributedStringKey.font: entryLabelFont ?? valueFont,
-                                    NSAttributedStringKey.foregroundColor: entryLabelColor ?? valueTextColor]
+                                    NSFontAttributeName: entryLabelFont ?? valueFont,
+                                    NSForegroundColorAttributeName: entryLabelColor ?? valueTextColor]
                             )
                         }
                     }
@@ -452,8 +457,8 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                                 align: align,
                                 attributes: [
-                                    NSAttributedStringKey.font: entryLabelFont ?? valueFont,
-                                    NSAttributedStringKey.foregroundColor: entryLabelColor ?? valueTextColor]
+                                    NSFontAttributeName: entryLabelFont ?? valueFont,
+                                    NSForegroundColorAttributeName: entryLabelColor ?? valueTextColor]
                             )
                         }
                     }
@@ -464,7 +469,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: labelPoint.x, y: labelPoint.y + lineHeight / 2.0),
                             align: align,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                            attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: valueTextColor]
                         )
                     }
                 }
@@ -482,7 +487,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                            attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: valueTextColor]
                         )
                         
                         if j < data.entryCount && pe?.label != nil
@@ -493,8 +498,8 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: x, y: y + lineHeight),
                                 align: .center,
                                 attributes: [
-                                    NSAttributedStringKey.font: entryLabelFont ?? valueFont,
-                                    NSAttributedStringKey.foregroundColor: entryLabelColor ?? valueTextColor]
+                                    NSFontAttributeName: entryLabelFont ?? valueFont,
+                                    NSForegroundColorAttributeName: entryLabelColor ?? valueTextColor]
                             )
                         }
                     }
@@ -508,8 +513,8 @@ open class PieChartRenderer: DataRenderer
                                 point: CGPoint(x: x, y: y + lineHeight / 2.0),
                                 align: .center,
                                 attributes: [
-                                    NSAttributedStringKey.font: entryLabelFont ?? valueFont,
-                                    NSAttributedStringKey.foregroundColor: entryLabelColor ?? valueTextColor]
+                                    NSFontAttributeName: entryLabelFont ?? valueFont,
+                                    NSForegroundColorAttributeName: entryLabelColor ?? valueTextColor]
                             )
                         }
                     }
@@ -520,7 +525,7 @@ open class PieChartRenderer: DataRenderer
                             text: valueText,
                             point: CGPoint(x: x, y: y + lineHeight / 2.0),
                             align: .center,
-                            attributes: [NSAttributedStringKey.font: valueFont, NSAttributedStringKey.foregroundColor: valueTextColor]
+                            attributes: [NSFontAttributeName: valueFont, NSForegroundColorAttributeName: valueTextColor]
                         )
                     }
                 }
@@ -552,9 +557,12 @@ open class PieChartRenderer: DataRenderer
     }
     
     /// draws the hole in the center of the chart and the transparent circle / hole
-    private func drawHole(context: CGContext)
+    fileprivate func drawHole(context: CGContext)
     {
-        guard let chart = chart else { return }
+        guard
+            let chart = chart,
+            let animator = animator
+            else { return }
         
         if chart.drawHoleEnabled
         {
@@ -608,7 +616,7 @@ open class PieChartRenderer: DataRenderer
     }
     
     /// draws the description text in the center of the pie chart makes most sense when center-hole is enabled
-    private func drawCenterText(context: CGContext)
+    fileprivate func drawCenterText(context: CGContext)
     {
         guard
             let chart = chart,
@@ -660,7 +668,8 @@ open class PieChartRenderer: DataRenderer
     {
         guard
             let chart = chart,
-            let data = chart.data
+            let data = chart.data,
+            let animator = animator
             else { return }
         
         context.saveGState()
@@ -724,8 +733,8 @@ open class PieChartRenderer: DataRenderer
             
             let accountForSliceSpacing = sliceSpace > 0.0 && sliceAngle <= 180.0
             
-            context.setFillColor(set.highlightColor?.cgColor ?? set.color(atIndex: index).cgColor)
-
+            context.setFillColor(set.color(atIndex: index).cgColor)
+            
             let sliceSpaceAngleOuter = visibleAngleCount == 1 ?
                 0.0 :
                 sliceSpace / (ChartUtils.Math.FDEG2RAD * radius)

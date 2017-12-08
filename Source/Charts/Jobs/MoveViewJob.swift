@@ -18,7 +18,22 @@ import CoreGraphics
 
 @objc(MoveChartViewJob)
 open class MoveViewJob: ViewPortJob
-{    
+{
+    public override init(
+        viewPortHandler: ViewPortHandler,
+        xValue: Double,
+        yValue: Double,
+        transformer: Transformer,
+        view: ChartViewBase)
+    {
+        super.init(
+            viewPortHandler: viewPortHandler,
+            xValue: xValue,
+            yValue: yValue,
+            transformer: transformer,
+            view: view)
+    }
+    
     open override func doJob()
     {
         guard

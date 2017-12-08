@@ -38,7 +38,7 @@ open class ChartDataSet: ChartBaseDataSet
         _values = [ChartDataEntry]()
     }
     
-    @objc public init(values: [ChartDataEntry]?, label: String?)
+    public init(values: [ChartDataEntry]?, label: String?)
     {
         super.init(label: label)
         
@@ -47,7 +47,7 @@ open class ChartDataSet: ChartBaseDataSet
         self.calcMinMax()
     }
     
-    @objc public convenience init(values: [ChartDataEntry]?)
+    public convenience init(values: [ChartDataEntry]?)
     {
         self.init(values: values, label: "DataSet")
     }
@@ -72,7 +72,7 @@ open class ChartDataSet: ChartBaseDataSet
     /// *
     /// - note: Calls `notifyDataSetChanged()` after setting a new value.
     /// - returns: The array of y-values that this DataSet represents.
-    @objc open var values: [ChartDataEntry]
+    open var values: [ChartDataEntry]
     {
         get
         {
@@ -122,16 +122,16 @@ open class ChartDataSet: ChartBaseDataSet
         let indexFrom = entryIndex(x: fromX, closestToY: Double.nan, rounding: .down)
         let indexTo = entryIndex(x: toX, closestToY: Double.nan, rounding: .up)
         
-        if indexTo < indexFrom { return }
+        if indexTo <= indexFrom { return }
         
-        for i in indexFrom...indexTo
+        for i in indexFrom..<indexTo
         {
             // only recalculate y
             calcMinMaxY(entry: _values[i])
         }
     }
     
-    @objc open func calcMinMaxX(entry e: ChartDataEntry)
+    open func calcMinMaxX(entry e: ChartDataEntry)
     {
         if e.x < _xMin
         {
@@ -143,7 +143,7 @@ open class ChartDataSet: ChartBaseDataSet
         }
     }
     
-    @objc open func calcMinMaxY(entry e: ChartDataEntry)
+    open func calcMinMaxY(entry e: ChartDataEntry)
     {
         if e.y < _yMin
         {
